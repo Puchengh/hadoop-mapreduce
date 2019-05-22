@@ -43,8 +43,15 @@ public class Driver {
 		job.setMapOutputValueClass(IntWritable.class);
 		
 		//设置reduce的输出类型
+		//JDK的泛型是在1.5之后开始出现的  泛型是只在代码变异时候进行类型检查的
+		//在代码运行的时候泛型会被自动擦除 所以在这里需要制定
+		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
+		
+//		//设置切片的消息   单位是字节Byte
+//		FileInputFormat.setMinInputSplitSize(job, 640);
+//		FileInputFormat.setMaxInputSplitSize(job, 330);
 		
 		//设置输入路径和输出路径  运行的时候代码控制台输出的第一个参数
 		//需要的统计的单词的路径

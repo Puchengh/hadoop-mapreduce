@@ -1,0 +1,9 @@
+在Map和Reduce的过程中会有一个shuffle的过程
+
+排序  排序之后相同的单词就在一起了  所有排序在前  WritableComparable
+
+分组  WritableComparator
+
+分区  将结果输出进行分类  Partition  默认实现是HashPartitioner
+
+组件   Combiner组件  ：合并组件   小结果统计
