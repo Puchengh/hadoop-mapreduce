@@ -1,4 +1,4 @@
-package com.puchen.cn.wordcount;
+package com.puchen.cn.partition;
 
 import java.io.IOException;
 
@@ -28,6 +28,7 @@ public class Driver {
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		//首先加载配置文件
 		Configuration conf = new Configuration();
+//		System.setProperty("HADOOP_USER_NAME","hadoop");
 		//启动一个job  封装mapper和reduce  输入和输出
 		Job job = Job.getInstance(conf);
 		
@@ -37,7 +38,7 @@ public class Driver {
 		//设置Mapper和Reduce的类
 		job.setMapperClass(WordCountMapper.class);
 		job.setReducerClass(WordCountReduce.class);
-		
+		  
 		//设置mapper的输出类型
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(IntWritable.class);
@@ -49,15 +50,9 @@ public class Driver {
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		
-//		job.setNumReduceTasks(3);
+		job.setNumReduceTasks(2);
+		job.setPartitionerClass(MyPartition.class);
 		
-		
-//		//设置切片的消息   单位是字节Byte
-//		FileInputFormat.setMinInputSplitSize(job, 640);
-//		FileInputFormat.setMaxInputSplitSize(job, 330);
-		
-		//设置输入路径和输出路径  运行的时候代码控制台输出的第一个参数
-		//需要的统计的单词的路径
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		//输出路径：最终结果输出的路径  输出路径一定不能存在  hdfs怕吧原来的文件覆盖了  所以一定是一个全新的路径
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));

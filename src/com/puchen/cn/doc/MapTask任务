@@ -48,4 +48,4 @@ split:切片  逻辑切片  只是进行一个逻辑划分并没有真正的进�
 //	CombineTextInputFormat.addInputPath(job, new Path(args[0]));
 
 
-reduceTask任务				  
+			  
