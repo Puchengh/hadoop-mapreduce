@@ -8,7 +8,28 @@
 
 组件   Combiner组件  ：合并组件   小结果统计
 
-
-
 自定义类：mapreduce中如果想要自定义类作为传输的key或者value  那么自定义类必须实现序列化和反序列化
 	实现Writable接口
+
+Combiner组件
+	map的并行度和切片相关  和数据有关  数据越大maptask的并行度越高
+	所有计算任务全部在reduce上
+	如果map可以和reduce分担一部门压力 reduce的性能肯定会提高
+	作用:减少reduce端的数据量  在map端做了一次合并  减少了shuffle过程的数据量  提高分布式计算程序的整体性能
+	Combiner组件可以分担reduce压力  combiner中的业务逻辑和reduce中的业务逻辑一样
+	
+	自定义Combiner组件   默认情况下  没有Combiner组件的
+	  1）继承reduce类  
+	  	在写maopreduce程序的时候  map的输出就是reduce的输入
+	  	也就是说这个reducer的前两个泛型和后两个泛型的类型一致
+	  2）重写reduce方法
+	  	通常情况下Combiner可以直接使用reduce方法
+	Combiner本质上相当于在map端进行了一次reduce程序
+	不可以对多个maptask的结果进行合并
+  注意：
+ 	有时候能用Combiner  有时候不能使用Combiner   根据业务逻辑综合使用 		
+ 	
+排序 
+	mapTask--->reduceTask之间框架默认加了排序
+	排序的规则是按照map端输出的key的字典顺序进行排序
+	如果想要对词频进行排序  那么词频应该放在map输入的位置

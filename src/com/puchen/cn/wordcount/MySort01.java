@@ -5,26 +5,46 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
- * 驱动类  代码提交类
+ * 按照出现的次数排序
  * @author Administrator
- * 代码的运行有三种模式
- * 将代码达成jar包  提交到集群运行  真实生产中用
- * 缺点：不便于代码的调试
- * 
- * hadoop jar 包的名称  主类的全路径名  代码运行需要的参数    RunJar jarFile [mainClass] args...
- * hadoop jar /jarpackage/wordcount01.jar com.puchen.cn.wordcount.Driver /in /wordcount01
  *
- * _SECCESS:运行成功的标志文件  大小是0  只是一个标志
- * part-r-00000：最终结果文件  默认情况下是1个
  */
-public class Driver {
+public class MySort01 {
 
+	static class MyMapper extends Mapper<LongWritable,Text,IntWritable,Text>{
+		@Override
+		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, IntWritable, Text>.Context context)
+				throws IOException, InterruptedException {
+			//默认情况下  输出结果  key和value之间的分隔符是制表符
+			// TODO Auto-generated method stub
+			String[] datas = value.toString().split("\t");
+			String word=datas[0];
+			int count=Integer.parseInt(datas[1]);
+			context.write(new IntWritable(count), new Text(word));
+		}
+		
+	}
+	
+	static class MyReduce extends Reducer<IntWritable, Text, Text, IntWritable>{
+		@Override
+		protected void reduce(IntWritable key, Iterable<Text> values,
+				Reducer<IntWritable, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
+			for(Text v:values){
+				context.write(v, key);
+				
+			}
+		}
+	}
+	
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		//首先加载配置文件
 		Configuration conf = new Configuration();
@@ -39,8 +59,8 @@ public class Driver {
 		job.setReducerClass(WordCountReduce.class);
 		
 		//设置mapper的输出类型
-		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(IntWritable.class);
+		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputValueClass(Text.class);
 		
 		//设置reduce的输出类型
 		//JDK的泛型是在1.5之后开始出现的  泛型是只在代码变异时候进行类型检查的
@@ -59,13 +79,12 @@ public class Driver {
 		
 		//设置输入路径和输出路径  运行的时候代码控制台输出的第一个参数
 		//需要的统计的单词的路径
-		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileInputFormat.addInputPath(job, new Path("wc_combiner_02"));
 		//输出路径：最终结果输出的路径  输出路径一定不能存在  hdfs怕吧原来的文件覆盖了  所以一定是一个全新的路径
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path("/sort01"));
 		
 		//job提交   还有一种不打印日志的  job.submit();
 		job.waitForCompletion(true);
-		
 		
 	}
 	
