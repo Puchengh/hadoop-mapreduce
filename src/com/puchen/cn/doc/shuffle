@@ -32,4 +32,18 @@ Combiner组件
 排序 
 	mapTask--->reduceTask之间框架默认加了排序
 	排序的规则是按照map端输出的key的字典顺序进行排序
-	如果想要对词频进行排序  那么词频应该放在map输入的位置
+	如果想要对词频进行排序  那么词频应该放在map输入的位置  并且自定义的类必须放在key的位置
+	
+	排序的时候精良避免在reduce端进行排序    如果要在reduce端进行排序
+	
+全局计数器
+	程序运行过程中框架自带的计数器
+		文件系统计数器  File System Counters  文件读写的计数器
+		mapreduce框架计数器   Map-reduce Framework 
+	自定义的计数器 ：
+		应用场景：去全局变量的时候会使用
+		Counter
+		先定义一个枚举类
+		
+		
+		
